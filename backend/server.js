@@ -12,10 +12,7 @@ app.use(express.json());
 // Use MongoDB Atlas URI from env or fallback to local MongoDB
 const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/mern-todo";
 mongoose
-  .connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(mongoUri)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -42,4 +39,6 @@ app.delete("/todos/:id", async (req, res) => {
   res.json({ message: "Deleted" });
 });
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+// Use PORT provided by Render (or other hosting) or default to 5000
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

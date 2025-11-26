@@ -9,19 +9,23 @@ function App() {
   // State to hold input value for new todo
   const [input, setInput] = useState("");
 
+  // Determine API base URL from env var (set this on Render) or default to localhost
+  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
   // Fetch todos from backend when component mounts
   useEffect(() => {
-    fetch("http://localhost:5000/todos") // GET request to backend
+    fetch(`${API_BASE}/todos`) // GET request to backend
       .then((res) => res.json()) // Parse response as JSON
-      .then((data) => setTodos(data)); // Set todos state
-  }, []);
+      .then((data) => setTodos(data)) // Set todos state
+      .catch((err) => console.error("Failed to fetch todos", err));
+  }, [API_BASE]);
 
   // Add a new todo to backend and update state
   const handleAdd = async (e) => {
     e.preventDefault(); // Prevent form reload
     if (!input.trim()) return; // Ignore empty input
     // POST request to backend
-    const res = await fetch("http://localhost:5000/todos", {
+    const res = await fetch(`${API_BASE}/todos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: input, completed: false }),
@@ -34,7 +38,7 @@ function App() {
   // Delete a todo from backend and update state
   const handleDelete = async (id) => {
     // DELETE request to backend
-    await fetch(`http://localhost:5000/todos/${id}`, { method: "DELETE" });
+    await fetch(`${API_BASE}/todos/${id}`, { method: "DELETE" });
     // Remove todo from state
     setTodos(todos.filter((todo) => todo._id !== id));
   };
@@ -63,7 +67,10 @@ function App() {
             {/* Todo text */}
             <span>{todo.text}</span>
             {/* Delete button */}
-            <button className="delete-btn" onClick={() => handleDelete(todo._id)}>
+            <button
+              className="delete-btn"
+              onClick={() => handleDelete(todo._id)}
+            >
               Delete
             </button>
           </li>
